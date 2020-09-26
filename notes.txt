@@ -1,0 +1,42 @@
+***** DEBUGGER
+
+créer fichier launch.json dans dossier .vscode
+
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Function",
+        "type": "node",
+        "request": "attach",
+        "port": 9229
+      }
+    ]
+  }
+
+-- functions inspect httpEmail (pas sûr que ça marche)
+
+
+******************** 
+
+- Nouvel emulateur
+
+Avant de le lancer il faut faire un export pour éviter pb de credentials :
+
+export GOOGLE_APPLICATION_CREDENTIALS="/Users/micheldio/Documents/Developpement/MesProjets/Web/jacquesmarieshop-firebase-adminsdk-8elep-52b0847fe1.json"
+
+Dans le répertoire functions :
+
+firebase emulators:start --inspect-functions
+
+Le fichier de conf est "firebase.json" (pour les ports notamment)
+
+- appeler les functions
+
+via shell =>
+
+firebase functions:shell => démarre un autre émulateur
+
+nomFunction.post({data});
+
+Uilisation postman possible
