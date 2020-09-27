@@ -28,14 +28,14 @@ const registerUser = (functions, admin) => functions.https.onRequest((request, r
 
         user => {
             functions.logger.info("registerUser user ok " + JSON.stringify(user));
-            return response.status(200).send("register user ok : " + user.email);
+            return response.status(200).send({message: "OK"});
         } 
   
     ).catch(
 
         err =>  {
             functions.logger.error("registerUser user error " + JSON.stringify(err));
-            return response.status(400).send("register user nok : " + err.message);
+            return response.status(400).send({message: "NOK", reason: err.message});
         }
     )
   });
