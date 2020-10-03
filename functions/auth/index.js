@@ -75,6 +75,13 @@ const singInUser = (functions, firebase) => functions.https.onRequest((requset, 
         });
 });
 
+/**
+ * 
+ * Delete user
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
 const deleteUser = (functions, admin) => functions.https.onRequest((requset, response) => {
 
     functions.logger.info("deleteUser start");
@@ -94,8 +101,33 @@ const deleteUser = (functions, admin) => functions.https.onRequest((requset, res
 
 });
 
-  module.exports = {
-      registerUser,
-      singInUser,
-      deleteUser
-  }
+
+/**
+ * 
+ * Reset du mot de passe : envoi un mail avec lien reset
+ * 
+ * @param {*} functions 
+ * @param {*} firebase 
+ */
+const userPassworReset = (functions, firebase, admin) => functions.https.onRequest((requset, response) => {
+
+    functions.logger.info("userPassworReset start");
+
+    const {email} = requset.body.user;
+    functions.logger.info("userPassworReset email : " + email);
+
+    firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+            return response.status(200).send({message: "OK"}); 
+        })
+        .catch(error => {
+            return response.status(400).send({message: "NOK", reason: error.message});
+        });
+});
+
+module.exports = {
+    registerUser,
+    singInUser,
+    deleteUser,
+    userPassworReset
+}
