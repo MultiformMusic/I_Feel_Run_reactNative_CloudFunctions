@@ -13,7 +13,8 @@ firebase.initializeApp(firebaseConfig);
 
 // *** Cloud Fucntions : Gestion des Users ***//
 
-const { registerUser, singInUser } = require('./auth/index');
+const { registerUser, singInUser, deleteUser } = require('./auth/index');
 
 exports.registerUser = registerUser(functions, admin);
 exports.signInUser = singInUser(functions, firebase);
+exports.deleteUser = deleteUser(functions, admin);

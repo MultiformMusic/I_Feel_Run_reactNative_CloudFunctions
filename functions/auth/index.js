@@ -28,7 +28,7 @@ const registerUser = (functions, admin) => functions.https.onRequest((request, r
 
         user => {
             functions.logger.info("registerUser user ok " + JSON.stringify(user));
-            return response.status(200).send({message: "OK"});
+            return response.status(200).send({message: "OK", uid: user.uid});
         } 
   
     ).catch(
@@ -71,11 +71,31 @@ const singInUser = (functions, firebase) => functions.https.onRequest((requset, 
         })
         .catch(error => {
             functions.logger.error("singInUser error : " + error.message);
-            response.status(400).send("singInUser error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: err.message});
         });
+});
+
+const deleteUser = (functions, admin) => functions.https.onRequest((requset, response) => {
+
+    functions.logger.info("deleteUser start");
+
+    const {uid} = requset.body.user;
+    functions.logger.info("deleteUser uid : " + uid);
+
+    admin.auth().deleteUser(uid)
+              .then(res => {
+                return response.status(200).send({message: "OK"}); 
+              })
+              .catch(error => {
+                functions.logger.error("deleteUser error : " + error.message);
+                return response.status(400).send({message: "NOK", reason: err.message});
+            });              
+
+
 });
 
   module.exports = {
       registerUser,
-      singInUser
+      singInUser,
+      deleteUser
   }
