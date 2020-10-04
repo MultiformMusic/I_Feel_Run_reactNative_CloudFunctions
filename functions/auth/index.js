@@ -109,7 +109,7 @@ const deleteUser = (functions, admin) => functions.https.onRequest((requset, res
  * @param {*} functions 
  * @param {*} firebase 
  */
-const userPassworReset = (functions, firebase, admin) => functions.https.onRequest((requset, response) => {
+const userPasswordReset = (functions, firebase, admin) => functions.https.onRequest((requset, response) => {
 
     functions.logger.info("userPassworReset start");
 
@@ -129,5 +129,5 @@ module.exports = {
     registerUser,
     singInUser,
     deleteUser,
-    userPassworReset
+    userPasswordReset
 }
