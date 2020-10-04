@@ -13,9 +13,10 @@ firebase.initializeApp(firebaseConfig);
 
 // *** Cloud Fucntions : Gestion des Users ***//
 
-const { registerUser, singInUser, deleteUser, userPasswordReset } = require('./auth/index');
+const { registerUser, singInUser, deleteUser, userPasswordReset, updateUser } = require('./auth/index');
 
 exports.registerUser = registerUser(functions, admin);
 exports.signInUser = singInUser(functions, firebase);
 exports.deleteUser = deleteUser(functions, admin);
 exports.userPasswordReset = userPasswordReset(functions, firebase);
+exports.updateUser = updateUser(functions, admin);

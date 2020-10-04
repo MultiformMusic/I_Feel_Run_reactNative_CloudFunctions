@@ -1,5 +1,4 @@
 
-
 /**
  * 
  * Création d'un utilisateur (email/password)
@@ -109,7 +108,7 @@ const deleteUser = (functions, admin) => functions.https.onRequest((requset, res
  * @param {*} functions 
  * @param {*} firebase 
  */
-const userPasswordReset = (functions, firebase, admin) => functions.https.onRequest((requset, response) => {
+const userPasswordReset = (functions, firebase) => functions.https.onRequest((requset, response) => {
 
     functions.logger.info("userPassworReset start");
 
@@ -121,13 +120,44 @@ const userPasswordReset = (functions, firebase, admin) => functions.https.onRequ
             return response.status(200).send({message: "OK"}); 
         })
         .catch(error => {
+            functions.logger.error("userPasswordReset error : " + error.message);
             return response.status(400).send({message: "NOK", reason: error.message});
         });
+});
+
+/**
+ * 
+ * Mise à jour utilisateur
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const updateUser = (functions, admin) => functions.https.onRequest((requset, response) => {
+
+    functions.logger.info("updateUser start");
+
+    const {user} = requset.body;
+    let userToUpdate = {...user};
+    delete userToUpdate.uid;
+
+    functions.logger.info("updateUser user : " + user);
+    functions.logger.info("updateUser userToUpdate : " + userToUpdate);
+
+    admin.auth().updateUser(user.uid, {...userToUpdate})
+        .then(function(userRecord) {
+            return response.status(200).send({message: "OK", user: userRecord}); 
+        })
+        .catch(function(error) {
+            functions.logger.error("updateUser error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: error.message});
+        });
+
 });
 
 module.exports = {
     registerUser,
     singInUser,
     deleteUser,
-    userPasswordReset
+    userPasswordReset,
+    updateUser
 }
