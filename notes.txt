@@ -24,6 +24,8 @@ créer fichier launch.json dans dossier .vscode
 Avant de le lancer il faut faire un export pour éviter pb de credentials :
 
 export GOOGLE_APPLICATION_CREDENTIALS="/Users/micheldio/Documents/Developpement/MesProjets/Web/jacquesmarieshop-firebase-adminsdk-8elep-52b0847fe1.json"
+set GOOGLE_APPLICATION_CREDENTIALS="C:\\Documents\\Perso\\dev\\ReactNative\\recipeng-227e7-firebase-adminsdk-18nzv-291f712125.json"
+
 
 Dans le répertoire functions :
 

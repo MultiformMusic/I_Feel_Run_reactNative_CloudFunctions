@@ -70,7 +70,7 @@ const singInUser = (functions, firebase) => functions.https.onRequest((requset, 
         })
         .catch(error => {
             functions.logger.error("singInUser error : " + error.message);
-            return response.status(400).send({message: "NOK", reason: err.message});
+            return response.status(400).send({message: "NOK", reason: error.message});
         });
 });
 
