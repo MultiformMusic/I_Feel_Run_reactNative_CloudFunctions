@@ -101,10 +101,28 @@ const getUserActivities = (functions, admin) => functions.https.onRequest( async
 
     try {
 
-        const userRef = db.collection('users');
-        const userDatas = await userRef.doc(email).get();
+        const userRef = await db.collection('users');
+        const snapshot = await userRef.doc(email).collection('activities').get();
+        let activities = [];
+        snapshot.forEach(async doc => {
+            activities.push(doc.data());
+        });
 
-        return response.status(200).send({message: "OK", datas: userDatas.data()});
+        for (activity of activities) {
+
+            const snapshotGeo = await userRef.doc(email).collection('activities')
+                                             .doc(activity.activityDoc.timeStartActivity.toString()).collection('geopoint').get();
+
+            let geopoints = [];
+            snapshotGeo.forEach(docGeo => {
+                geopoints.push(docGeo.data());
+            })
+
+            activity.activityDoc.activityGeopoints = geopoints;
+
+        }
+
+        return response.status(200).send({message: "OK", datas: activities});
         
     } catch (error) {
 
