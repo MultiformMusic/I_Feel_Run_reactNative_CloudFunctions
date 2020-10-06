@@ -35,8 +35,6 @@ const saveUserActivities = (functions, admin) => functions.https.onRequest( asyn
 
         functions.logger.info("saveUserActivities activityToSave OK = " + datas.timeStartActivity.toString());
 
-        
-
         return response.status(200).send({message: "OK"});
         
     } catch (error) {
@@ -45,6 +43,42 @@ const saveUserActivities = (functions, admin) => functions.https.onRequest( asyn
         return response.status(400).send({message: "NOK", reason: error.message});
     }
 
+});
+
+/**
+ * 
+ * Check if an activity exists for user
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const activityExist = (functions, admin) => functions.https.onRequest( async (request, response) => {
+
+    functions.logger.info("activityExist start");
+
+    const db = admin.firestore();
+
+    const {user: {email}, activity: {time}} = request.body;
+
+    functions.logger.info("saveUserActivities activityExist = " + JSON.stringify(email) + " -- time = " + JSON.stringify(time));
+
+    try {
+
+        const userRef = await db.collection('users');
+        const activityRef = await userRef.doc(email).collection('activities').doc(time.toString());
+        const activityDoc = await activityRef.get();
+
+        if (activityDoc && activityDoc.exists) {
+            return response.status(200).send({message: "OK"});
+        } else {
+            return response.status(200).send({message: "NOK"});
+        }
+
+    } catch (error) {
+        functions.logger.error("activityExist error : " + error.message);
+        return response.status(400).send({message: "NOK", reason: error.message});
+    }
+    
 });
 
 /**
@@ -80,5 +114,6 @@ const getUserActivities = (functions, admin) => functions.https.onRequest( async
 
 module.exports = {
     saveUserActivities,
+    activityExist,
     getUserActivities
 }
