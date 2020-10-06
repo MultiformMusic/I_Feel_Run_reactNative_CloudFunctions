@@ -69,8 +69,10 @@ const activityExist = (functions, admin) => functions.https.onRequest( async (re
         const activityDoc = await activityRef.get();
 
         if (activityDoc && activityDoc.exists) {
+            functions.logger.info("activityExist OK");
             return response.status(200).send({message: "OK"});
         } else {
+            functions.logger.info("activityExist NOK");
             return response.status(200).send({message: "NOK"});
         }
 
