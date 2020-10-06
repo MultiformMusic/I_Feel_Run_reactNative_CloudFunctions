@@ -110,6 +110,7 @@ const getUserActivities = (functions, admin) => functions.https.onRequest( async
 
         for (activity of activities) {
 
+            functions.logger.info("getUserActivities activity = " + activity.activityDoc.timeStartActivity);
             const snapshotGeo = await userRef.doc(email).collection('activities')
                                              .doc(activity.activityDoc.timeStartActivity.toString()).collection('geopoint').get();
 
