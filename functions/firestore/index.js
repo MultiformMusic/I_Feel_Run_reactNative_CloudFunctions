@@ -18,8 +18,24 @@ const saveUserActivities = (functions, admin) => functions.https.onRequest( asyn
     try {
 
         const userRef = db.collection('users');
-        let userFirestore = await userRef.doc(email);
-        await userFirestore.set({datas},  { merge: true });
+
+        functions.logger.info("saveUserActivities activityToSave begin = " + datas.timeStartActivity.toString());
+        const activityDoc = {...datas};
+        delete activityDoc.activityGeoPoints;
+        const activityRef = await userRef.doc(email).collection('activities');
+        await activityRef.doc(datas.timeStartActivity.toString()).set({activityDoc},  { merge: true });
+
+        const activityGeopoints = datas.activityGeoPoints;
+        functions.logger.info("saveUserActivities geopoints = " + activityGeopoints.length);
+        for (const geopoint of activityGeopoints) {
+
+            await activityRef.doc(datas.timeStartActivity.toString()).collection('geopoint')
+                                .doc(geopoint.order.toString()).set({geopoint},  { merge: true });
+        }
+
+        functions.logger.info("saveUserActivities activityToSave OK = " + datas.timeStartActivity.toString());
+
+        
 
         return response.status(200).send({message: "OK"});
         
