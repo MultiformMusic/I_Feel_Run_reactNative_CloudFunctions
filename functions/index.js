@@ -11,6 +11,8 @@ admin.initializeApp({
 
 firebase.initializeApp(firebaseConfig);
 
+const cors = require('cors')({ origin: true });
+
 // *** Cloud Fucntions : Gestion des Users ***//
 
 const { registerUser, singInUser, deleteUser, userPasswordReset, updateUser } = require('./auth/index');
@@ -27,4 +29,4 @@ exports.getUserActivities = getUserActivities(functions, admin);
 exports.activityExist = activityExist(functions, admin);
 exports.getUserActivitiesTimeStart = getUserActivitiesTimeStart(functions, admin);
 exports.getActivityFromTimeStart = getActivityFromTimeStart(functions, admin);
-exports.getWeatherFromCoord = getWeatherFromCoord(functions);
+exports.getWeatherFromCoord = getWeatherFromCoord(functions, cors);

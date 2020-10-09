@@ -70,3 +70,4 @@ firebaseConfig.json
 ifeelrunreactnative.json
 .env.yaml
 .runtimeconfig.json
+constants.js
