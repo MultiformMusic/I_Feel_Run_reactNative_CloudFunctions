@@ -138,7 +138,7 @@ const getActivityFromTimeStart = (functions, admin) => functions.https.onRequest
     try {
 
         const userRef = await db.collection('users');
-        const activityRef = await userRef.doc(email).collection('activities').doc(timestart);
+        const activityRef = await userRef.doc(email).collection('activities').doc(timestart.toString());
         const activityDoc = await activityRef.get();
 
         if (activityDoc && activityDoc.exists) {
