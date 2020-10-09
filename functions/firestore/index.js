@@ -150,7 +150,19 @@ const getActivityFromTimeStart = (functions, admin) => functions.https.onRequest
 
             let geopoints = [];
             snapshotGeo.forEach(docGeo => {
-                geopoints.push(docGeo.data());
+                geopoints.push(docGeo.data().geopoint);
+            });
+
+            // tri par order des points géo
+            geopoints.sort((a, b) => {
+              
+                let comparison = 0;
+                if (a.order > b.order) {
+                  comparison = 1;
+                } else if (a.order < b.order) {
+                  comparison = -1;
+                }
+                return comparison;
             })
 
             activity.activityGeopoints = geopoints;
