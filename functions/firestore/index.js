@@ -85,7 +85,95 @@ const activityExist = (functions, admin) => functions.https.onRequest( async (re
 
 /**
  * 
- * Get all activities fro an user account (email)
+ * Récupère tous les timeStart des activités de l'utilisateur
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const getUserActivitiesTimeStart = (functions, admin) => functions.https.onRequest( async (request, response) => {
+
+    functions.logger.info("getUserActivitiesTimeStart start");
+
+    const db = admin.firestore();
+
+    const {user: {email}} = request.body;
+    functions.logger.info("getUserActivitiesTimeStart email = " + email);
+
+    try {
+        
+        const userRef = await db.collection('users');
+        const snapshot = await userRef.doc(email).collection('activities').get();
+        let activities = [];
+        snapshot.forEach(async doc => {
+            functions.logger.info("getUserActivitiesTimeStart timeStartActivity = " + doc.data().activityDoc.timeStartActivity);
+            activities.push(doc.data().activityDoc.timeStartActivity);
+        });
+
+        return response.status(200).send({message: "OK", datas: activities});
+
+    } catch (error) {
+
+        functions.logger.error("getUserActivitiesTimeStart error : " + error.message);
+        return response.status(400).send({message: "NOK", reason: error.message});   
+    }
+
+});
+
+/**
+ * 
+ * Récupère une activity par rapport à son timestamp et email
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const getActivityFromTimeStart = (functions, admin) => functions.https.onRequest( async (request, response) => {
+
+    functions.logger.info("getActivityFromTimeStart start");
+
+    const db = admin.firestore();
+
+    const {email, timestart} = request.body;
+    functions.logger.info("getActivityFromTimeStart timestart = " + timestart + " - email = " + email);
+
+    try {
+
+        const userRef = await db.collection('users');
+        const activityRef = await userRef.doc(email).collection('activities').doc(timestart);
+        const activityDoc = await activityRef.get();
+
+        if (activityDoc && activityDoc.exists) {
+
+            let activity = activityDoc.data().activityDoc;
+
+            const snapshotGeo = await userRef.doc(email).collection('activities')
+                                             .doc(activity.timeStartActivity.toString()).collection('geopoint').get();
+
+            let geopoints = [];
+            snapshotGeo.forEach(docGeo => {
+                geopoints.push(docGeo.data());
+            })
+
+            activity.activityGeopoints = geopoints;
+
+            return response.status(200).send({message: "OK", datas: activity});
+
+
+        } else {
+            functions.logger.info("getActivityFromTimeStart NOK");
+            return response.status(200).send({message: "NOK"});
+        }
+        
+    } catch (error) {
+        
+        functions.logger.error("getActivityFromTimeStart error : " + error.message);
+        return response.status(400).send({message: "NOK", reason: error.message});
+    }
+
+});
+
+/**
+ * 
+ * Get all activities from an user account (email)
  * 
  * @param {*} functions 
  * @param {*} admin 
@@ -136,5 +224,7 @@ const getUserActivities = (functions, admin) => functions.https.onRequest( async
 module.exports = {
     saveUserActivities,
     activityExist,
+    getUserActivitiesTimeStart,
+    getActivityFromTimeStart,
     getUserActivities
 }

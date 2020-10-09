@@ -68,3 +68,5 @@ node_modules/
 ./functions/node_modules
 firebaseConfig.json
 ifeelrunreactnative.json
+.env.yaml
+.runtimeconfig.json
