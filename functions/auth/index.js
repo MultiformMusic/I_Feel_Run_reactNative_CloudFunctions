@@ -154,10 +154,70 @@ const updateUser = (functions, admin) => functions.https.onRequest((requset, res
 
 });
 
+/**
+ * 
+ * Creéation d'un token avec exp 30 jours pour uid
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const createCustomToken = (functions, admin, cors) => functions.https.onRequest(async (request, response) => {
+
+    functions.logger.info("createCustomToken start");
+
+    const {user} = JSON.parse(request.body);
+
+    functions.logger.info("createCustomToken uid : " + user.uid);
+
+    cors(request, response, async () => {
+
+        try {
+
+        const csutomeToken = await admin.auth().createCustomToken(user.uid, {expiresAt: Date.now() + (1000 * 60 * 60 * 24 * 30)});
+        return response.status(200).send({message: "OK", csutomeToken}); 
+            
+        } catch (error) {
+            functions.logger.error("createCustomToken error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: error.message});
+        }
+    });
+});
+
+
+/**
+ * 
+ * Validation token user
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ */
+const validUserToken = (functions, admin) => functions.https.onRequest(async (requset, response) => {
+
+    functions.logger.info("validUserToken start");
+
+    const {token} = requset.body;
+
+    functions.logger.info("validUserToken token : " + token);
+
+    try {
+
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        let uid = decodedToken.uid;
+
+        return response.status(200).send({message: "OK", uid}); 
+
+    } catch (error) {
+        functions.logger.error("validUserToken error : " + error.message);
+        return response.status(400).send({message: "NOK", reason: error.message});
+    }
+});
+
 module.exports = {
     registerUser,
     singInUser,
     deleteUser,
     userPasswordReset,
-    updateUser
+    updateUser,
+    createCustomToken,
+    validUserToken
 }

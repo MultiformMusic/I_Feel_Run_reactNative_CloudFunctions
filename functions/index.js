@@ -15,7 +15,7 @@ const cors = require('cors')({ origin: true });
 
 // *** Cloud Fucntions : Gestion des Users ***//
 
-const { registerUser, singInUser, deleteUser, userPasswordReset, updateUser } = require('./auth/index');
+const { registerUser, singInUser, deleteUser, userPasswordReset, updateUser,createCustomToken, validUserToken } = require('./auth/index');
 const { saveUserActivities, getUserActivities, activityExist, getUserActivitiesTimeStart, getActivityFromTimeStart } = require('./firestore/index');
 const { getWeatherFromCoord} = require('./openweather/index');
 
@@ -29,4 +29,6 @@ exports.getUserActivities = getUserActivities(functions, admin);
 exports.activityExist = activityExist(functions, admin);
 exports.getUserActivitiesTimeStart = getUserActivitiesTimeStart(functions, admin);
 exports.getActivityFromTimeStart = getActivityFromTimeStart(functions, admin);
+exports.validUserToken = validUserToken(functions, admin);
+exports.createCustomToken = createCustomToken(functions, admin, cors);
 exports.getWeatherFromCoord = getWeatherFromCoord(functions, cors);
