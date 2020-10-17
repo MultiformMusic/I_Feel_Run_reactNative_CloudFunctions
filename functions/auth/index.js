@@ -160,6 +160,7 @@ const updateUser = (functions, admin) => functions.https.onRequest((requset, res
  * 
  * @param {*} functions 
  * @param {*} admin 
+ * @param {*} cors 
  */
 const createCustomToken = (functions, admin, cors) => functions.https.onRequest(async (request, response) => {
 
@@ -173,7 +174,7 @@ const createCustomToken = (functions, admin, cors) => functions.https.onRequest(
 
         try {
 
-        const customToken = await admin.auth().createCustomToken(user.uid, {expiresAt: Date.now() + (1000 * 60 * 60 * 24 * 30)});
+        const customToken = await admin.auth().createCustomToken(user.uid, {expiresAt: Date.now() + (1000 * 60 * 60 * 24 * 2)});
         return response.status(200).send({message: "OK", customToken}); 
             
         } catch (error) {
@@ -190,26 +191,31 @@ const createCustomToken = (functions, admin, cors) => functions.https.onRequest(
  * 
  * @param {*} functions 
  * @param {*} admin 
+ * @param {*} cors 
  */
-const validUserToken = (functions, admin) => functions.https.onRequest(async (requset, response) => {
+const validUserToken = (functions, admin, cors) => functions.https.onRequest(async (request, response) => {
 
     functions.logger.info("validUserToken start");
 
-    const {token} = requset.body;
+    const {token} = JSON.parse(request.body);
 
     functions.logger.info("validUserToken token : " + token);
 
-    try {
+    cors(request, response, async () => {
 
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        let uid = decodedToken.uid;
+        try {
 
-        return response.status(200).send({message: "OK", uid}); 
+            const decodedToken = await admin.auth().verifyIdToken(token);
+            let uid = decodedToken.uid;
 
-    } catch (error) {
-        functions.logger.error("validUserToken error : " + error.message);
-        return response.status(400).send({message: "NOK", reason: error.message});
-    }
+            return response.status(200).send({message: "OK", uid}); 
+
+        } catch (error) {
+            functions.logger.error("validUserToken error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: error.message});
+        }
+
+    });
 });
 
 module.exports = {

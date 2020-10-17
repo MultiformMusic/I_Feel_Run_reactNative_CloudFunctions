@@ -29,6 +29,6 @@ exports.getUserActivities = getUserActivities(functions, admin);
 exports.activityExist = activityExist(functions, admin);
 exports.getUserActivitiesTimeStart = getUserActivitiesTimeStart(functions, admin);
 exports.getActivityFromTimeStart = getActivityFromTimeStart(functions, admin);
-exports.validUserToken = validUserToken(functions, admin);
+exports.validUserToken = validUserToken(functions, admin, cors);
 exports.createCustomToken = createCustomToken(functions, admin, cors);
 exports.getWeatherFromCoord = getWeatherFromCoord(functions, cors);
