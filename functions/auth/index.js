@@ -173,8 +173,8 @@ const createCustomToken = (functions, admin, cors) => functions.https.onRequest(
 
         try {
 
-        const csutomeToken = await admin.auth().createCustomToken(user.uid, {expiresAt: Date.now() + (1000 * 60 * 60 * 24 * 30)});
-        return response.status(200).send({message: "OK", csutomeToken}); 
+        const customToken = await admin.auth().createCustomToken(user.uid, {expiresAt: Date.now() + (1000 * 60 * 60 * 24 * 30)});
+        return response.status(200).send({message: "OK", customToken}); 
             
         } catch (error) {
             functions.logger.error("createCustomToken error : " + error.message);
