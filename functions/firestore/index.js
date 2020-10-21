@@ -232,11 +232,51 @@ const getUserActivities = (functions, admin) => functions.https.onRequest( async
     }
 
 });
+/**
+ * 
+ * Get all activities from an user account (email) without geopoints
+ * 
+ * @param {*} functions 
+ * @param {*} admin 
+ * @param {*} cors 
+ * 
+ */
+const getUserActivitiesWithoutGeo = (functions, admin, cors) => functions.https.onRequest( async (request, response) => {
+
+    functions.logger.info("getUserActivitiesWithoutGeo start");
+
+    const db = admin.firestore();
+
+    const {user: {email}} = request.body;
+    functions.logger.info("getUserActivitiesWithoutGeo email = " + email);
+
+    cors(request, response, async () => {
+
+        try {
+
+            const userRef = await db.collection('users');
+            const snapshot = await userRef.doc(email).collection('activities').get();
+            let activities = [];
+            snapshot.forEach(async doc => {
+                activities.push(doc.data());
+            });
+
+            return response.status(200).send({message: "OK", datas: activities});
+            
+        } catch (error) {
+
+            functions.logger.error("getUserActivitiesWithoutGeo error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: error.message});
+        }
+    });
+
+});
 
 module.exports = {
     saveUserActivities,
     activityExist,
     getUserActivitiesTimeStart,
     getActivityFromTimeStart,
-    getUserActivities
+    getUserActivities,
+    getUserActivitiesWithoutGeo
 }
