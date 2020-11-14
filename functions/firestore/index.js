@@ -247,7 +247,7 @@ const getUserActivitiesWithoutGeo = (functions, admin, cors) => functions.https.
 
     const db = admin.firestore();
 
-    const {user: {email}} = request.body;
+    const {user: {email}} = JSON.parse(request.body);
     functions.logger.info("getUserActivitiesWithoutGeo email = " + email);
 
     cors(request, response, async () => {
