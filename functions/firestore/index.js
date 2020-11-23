@@ -126,60 +126,64 @@ const getUserActivitiesTimeStart = (functions, admin) => functions.https.onReque
  * @param {*} functions 
  * @param {*} admin 
  */
-const getActivityFromTimeStart = (functions, admin) => functions.https.onRequest( async (request, response) => {
+const getActivityFromTimeStart = (functions, admin, cors) => functions.https.onRequest( async (request, response) => {
 
     functions.logger.info("getActivityFromTimeStart start");
 
     const db = admin.firestore();
 
-    const {email, timestart} = request.body;
+    const {email, timestart} = JSON.parse(request.body);
     functions.logger.info("getActivityFromTimeStart timestart = " + timestart + " - email = " + email);
+    
+    cors(request, response, async () => {
 
-    try {
+        try {
 
-        const userRef = await db.collection('users');
-        const activityRef = await userRef.doc(email).collection('activities').doc(timestart.toString());
-        const activityDoc = await activityRef.get();
+            const userRef = await db.collection('users');
+            const activityRef = await userRef.doc(email).collection('activities').doc(timestart.toString());
+            const activityDoc = await activityRef.get();
 
-        if (activityDoc && activityDoc.exists) {
+            if (activityDoc && activityDoc.exists) {
 
-            let activity = activityDoc.data().activityDoc;
+                let activity = activityDoc.data().activityDoc;
 
-            const snapshotGeo = await userRef.doc(email).collection('activities')
-                                             .doc(activity.timeStartActivity.toString()).collection('geopoint').get();
+                const snapshotGeo = await userRef.doc(email).collection('activities')
+                                                .doc(activity.timeStartActivity.toString()).collection('geopoint').get();
 
-            let geopoints = [];
-            snapshotGeo.forEach(docGeo => {
-                geopoints.push(docGeo.data().geopoint);
-            });
+                let geopoints = [];
+                snapshotGeo.forEach(docGeo => {
+                    geopoints.push(docGeo.data().geopoint);
+                });
 
-            // tri par order des points géo
-            geopoints.sort((a, b) => {
-              
-                let comparison = 0;
-                if (a.order > b.order) {
-                  comparison = 1;
-                } else if (a.order < b.order) {
-                  comparison = -1;
-                }
-                return comparison;
-            })
+                // tri par order des points géo
+                geopoints.sort((a, b) => {
+                
+                    let comparison = 0;
+                    if (a.order > b.order) {
+                    comparison = 1;
+                    } else if (a.order < b.order) {
+                    comparison = -1;
+                    }
+                    return comparison;
+                })
 
-            activity.activityGeopoints = geopoints;
+                activity.activityGeopoints = geopoints;
 
-            return response.status(200).send({message: "OK", datas: activity});
+                return response.status(200).send({message: "OK", datas: activity});
 
 
-        } else {
-            functions.logger.info("getActivityFromTimeStart NOK");
-            return response.status(200).send({message: "NOK"});
+            } else {
+                functions.logger.info("getActivityFromTimeStart NOK");
+                return response.status(200).send({message: "NOK"});
+            }
+            
+        } catch (error) {
+            
+            functions.logger.error("getActivityFromTimeStart error : " + error.message);
+            return response.status(400).send({message: "NOK", reason: error.message});
         }
-        
-    } catch (error) {
-        
-        functions.logger.error("getActivityFromTimeStart error : " + error.message);
-        return response.status(400).send({message: "NOK", reason: error.message});
-    }
+
+    });
 
 });
 
