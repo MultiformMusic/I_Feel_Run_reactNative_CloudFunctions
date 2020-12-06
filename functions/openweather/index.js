@@ -38,7 +38,10 @@ const getWeatherFromCoord = (functions, cors) => functions.https.onRequest( asyn
                 datas: {
                     ...weather.data.weather[0], 
                     temp: weather.data.main.temp,
-                    humidity: weather.data.main.humidity
+                    humidity: weather.data.main.humidity,
+                    windSpeed: weather.data.wind.speed,
+                    windDeg: weather.data.wind.deg,
+                    windGust: weather.data.wind.gust
                 }
             });
     
