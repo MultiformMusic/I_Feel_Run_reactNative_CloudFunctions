@@ -132,7 +132,16 @@ const getActivityFromTimeStart = (functions, admin, cors) => functions.https.onR
 
     const db = admin.firestore();
 
-    const {email, timestart} = request.body;
+    let result = request.body;
+    let email = result.email;
+    let timestart = result.timestart;
+
+    if (!email) {
+        result = JSON.parse(result);
+        email = result.email;
+        timestart = result.timestart;
+    }
+    //const {email, timestart} = JSON.parse(request.body);
     functions.logger.info("getActivityFromTimeStart timestart = " + timestart + " - email = " + email);
     
     cors(request, response, async () => {
